@@ -75,7 +75,7 @@ func (m *GrantAndGrantSpec) GetGrantSpec() *grant.Spec {
 }
 
 type PlaintextAndGrantSpec struct {
-	Plaintext *Plaintext `protobuf:"bytes,1,opt,name=Plaintext,proto3" json:"Plaintext,omitempty"`
+	Plaintext *Plaintext `protobuf:"bytes,1,opt,name=MustPlaintextFromRefs,proto3" json:"MustPlaintextFromRefs,omitempty"`
 	// The type of grant to output
 	GrantSpec            *grant.Spec `protobuf:"bytes,2,opt,name=GrantSpec,proto3" json:"GrantSpec,omitempty"`
 	XXX_NoUnkeyedLiteral struct{}    `json:"-"`
@@ -397,7 +397,7 @@ func init() {
 	proto.RegisterType((*PlaintextAndGrantSpec)(nil), "api.PlaintextAndGrantSpec")
 	proto.RegisterType((*ReferenceAndGrantSpec)(nil), "api.ReferenceAndGrantSpec")
 	proto.RegisterType((*Header)(nil), "api.Header")
-	proto.RegisterType((*Plaintext)(nil), "api.Plaintext")
+	proto.RegisterType((*Plaintext)(nil), "api.MustPlaintextFromRefs")
 	proto.RegisterType((*Ciphertext)(nil), "api.Ciphertext")
 	proto.RegisterType((*ReferenceAndCiphertext)(nil), "api.ReferenceAndCiphertext")
 	proto.RegisterType((*Address)(nil), "api.Address")

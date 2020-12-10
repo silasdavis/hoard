@@ -23,3 +23,9 @@ message Ref {
     int64 Size = 5;
 }
 
+// Note the Salt here is different to the salt that may have been used to encrypt
+// the data pointed to by the reference.
+message RefsWithNonce {
+    repeated Ref Refs = 1;
+    bytes nonce = 2;
+}

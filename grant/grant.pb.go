@@ -80,7 +80,7 @@ func (m *Grant) GetVersion() int32 {
 }
 
 type Spec struct {
-	Plaintext            *PlaintextSpec `protobuf:"bytes,1,opt,name=Plaintext,json=plaintext,proto3" json:"plaintext"`
+	Plaintext            *PlaintextSpec `protobuf:"bytes,1,opt,name=MustPlaintext,json=plaintext,proto3" json:"plaintext"`
 	Symmetric            *SymmetricSpec `protobuf:"bytes,2,opt,name=Symmetric,json=symmetric,proto3" json:"symmetric"`
 	OpenPGP              *OpenPGPSpec   `protobuf:"bytes,3,opt,name=OpenPGP,json=openpgp,proto3" json:"openpgp"`
 	XXX_NoUnkeyedLiteral struct{}       `json:"-"`

@@ -1,6 +1,7 @@
 package reference
 
 import (
+	"github.com/monax/hoard/v8/version"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -19,25 +20,25 @@ import (
 // If this test fails but TestGrantPlaintext passes, consider removing this test.
 func TestReferencePlaintextDeterministic(t *testing.T) {
 	assert.Equal(t, `{"Refs":[{"Address":"AQIDBAUGBwEBAgMEBQYHAQECAwQFBgcBAQIDBAUGBwE=","SecretKey":"AQIDBAUGBwgBAgMEBQYHCAECAwQFBgcIAQIDBAUGBwg=","Size":1024}]}`,
-		string(testReference(nil).Plaintext(nil)))
+		string(MustPlaintextFromRefs(testReference(nil), nil)))
 
-	assert.Equal(t, `{"Refs":[{"Address":"AQIDBAUGBwEBAgMEBQYHAQECAwQFBgcBAQIDBAUGBwE=","SecretKey":"AQIDBAUGBwgBAgMEBQYHCAECAwQFBgcIAQIDBAUGBwg=","Salt":"c2FsdA==","Size":1024}]}`, string(testReference(([]byte)("salt")).Plaintext(nil)))
+	assert.Equal(t, `{"Refs":[{"Address":"AQIDBAUGBwEBAgMEBQYHAQECAwQFBgcBAQIDBAUGBwE=","SecretKey":"AQIDBAUGBwgBAgMEBQYHCAECAwQFBgcIAQIDBAUGBwg=","Salt":"c2FsdA==","Size":1024}]}`, string(MustPlaintextFromRefs(testReference(([]byte)("salt")), nil)))
 
-	assert.Equal(t, `{"Refs":[{"Address":"AQIDBAUGBwEBAgMEBQYHAQECAwQFBgcBAQIDBAUGBwE=","SecretKey":"AQIDBAUGBwgBAgMEBQYHCAECAwQFBgcIAQIDBAUGBwg=","Salt":"c2FsdA==","Size":1024}],"Nonce":"bm9uY2U="}`, string(testReference(([]byte)("salt")).Plaintext(([]byte)("nonce"))))
+	assert.Equal(t, `{"Refs":[{"Address":"AQIDBAUGBwEBAgMEBQYHAQECAwQFBgcBAQIDBAUGBwE=","SecretKey":"AQIDBAUGBwgBAgMEBQYHCAECAwQFBgcIAQIDBAUGBwg=","Salt":"c2FsdA==","Size":1024}],"Nonce":"bm9uY2U="}`, string(MustPlaintextFromRefs(testReference(([]byte)("salt")), ([]byte)("nonce"))))
 
 	assert.Equal(t, `{"Refs":[{"Address":"AQIDBAUGBwEBAgMEBQYHAQECAwQFBgcBAQIDBAUGBwE=","SecretKey":"AQIDBAUGBwgBAgMEBQYHCAECAwQFBgcIAQIDBAUGBwg=","Salt":"c2FsdA==","Size":1024}],"Nonce":"bm9uY2U="}`,
-		string(testReference(([]byte)("salt")).Plaintext(([]byte)("nonce"))))
+		string(MustPlaintextFromRefs(testReference(([]byte)("salt")), ([]byte)("nonce"))))
 }
 
 func TestReferencePlaintext(t *testing.T) {
 	ref := testReference(nil)
 	assert.Equal(t, ref,
-		RepeatedFromPlaintext(ref.Plaintext(nil)))
+		MustRefsFromPlaintext(MustPlaintextFromRefs(ref, nil), version.LatestGrantVersion))
 	assert.Equal(t, ref,
-		RepeatedFromPlaintext(ref.Plaintext(([]byte)("nonce"))))
+		MustRefsFromPlaintext(MustPlaintextFromRefs(ref, ([]byte)("nonce")), version.LatestGrantVersion))
 }
 
-func testReference(salt []byte) Refs {
+func testReference(salt []byte) []*Ref {
 	address := []byte{
 		1, 2, 3, 4, 5, 6, 7, 1,
 		1, 2, 3, 4, 5, 6, 7, 1,
@@ -50,5 +51,5 @@ func testReference(salt []byte) Refs {
 		1, 2, 3, 4, 5, 6, 7, 8,
 		1, 2, 3, 4, 5, 6, 7, 8,
 	}
-	return Refs{New(address, secretKey, salt, 1024)}
+	return []*Ref{New(address, secretKey, salt, 1024)}
 }

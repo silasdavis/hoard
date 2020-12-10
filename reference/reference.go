@@ -1,8 +1,8 @@
 package reference
 
 import (
-	"encoding/json"
 	"fmt"
+	"github.com/monax/hoard/v8/protodet"
 )
 
 func New(address, secretKey, salt []byte, size int64) *Ref {
@@ -17,42 +17,43 @@ func New(address, secretKey, salt []byte, size int64) *Ref {
 	}
 }
 
-type Refs []*Ref
-
-// Note the Salt here is different to the salt that may have been used to encrypt
-// the data pointed to by the reference.
-type refsWithNonce struct {
-	Refs
-	Nonce []byte `json:",omitempty"`
-}
-
 // Obtain the canonical plaintext for the Ref with an optional nonce that can be
 // be used to salt the plaintext in order to obtain an unpredictable version of
 // the plaintext for encryption purposes (i.e. for Grants). The nonce is
 // discarded when read by FromPlaintext
-func plaintext(wrapper interface{}) []byte {
-	bs, err := json.Marshal(wrapper)
+func PlaintextFromRefs(refs []*Ref, nonce []byte) ([]byte, error) {
+	refsWithNonce := &RefsWithNonce{
+		Refs:  refs,
+		Nonce: nonce,
+	}
+	bs, err := protodet.Marshal(refsWithNonce)
 	if err != nil {
-		panic(fmt.Errorf("did not expect an error when serialising reference, " +
-			"error suppressed for security"))
+		return nil, fmt.Errorf("error while marshalling to plaintext, error supressed for security")
+	}
+	return bs, nil
+}
+
+func MustPlaintextFromRefs(refs []*Ref, nonce []byte) []byte {
+	bs, err := PlaintextFromRefs(refs, nonce)
+	if err != nil {
+		panic(err)
 	}
 	return bs
 }
 
-func (refs Refs) Plaintext(nonce []byte) []byte {
-	return plaintext(refsWithNonce{Refs: refs, Nonce: nonce})
-}
-
-func fromPlaintext(wrapper interface{}, plaintext []byte) {
-	err := json.Unmarshal(plaintext, wrapper)
+func RefsFromPlaintext(plaintext []byte, version int32) ([]*Ref, error) {
+	wrapper := new(RefsWithNonce)
+	err := protodet.Unmarshal(plaintext, wrapper)
 	if err != nil {
-		panic(fmt.Errorf("did not expect an error when deserialising reference, " +
-			"error suppressed for security"))
+		return nil, fmt.Errorf("error while unmarshalling from plaintexst, error supressed for security")
 	}
+	return wrapper.Refs, nil
 }
 
-func RepeatedFromPlaintext(plaintext []byte) Refs {
-	wrapper := new(refsWithNonce)
-	fromPlaintext(wrapper, plaintext)
-	return wrapper.Refs
+func MustRefsFromPlaintext(plaintext []byte, version int32) []*Ref {
+	refs, err := RefsFromPlaintext(plaintext, version)
+	if err != nil {
+		panic(err)
+	}
+	return refs
 }

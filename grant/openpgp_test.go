@@ -1,6 +1,7 @@
 package grant
 
 import (
+	"github.com/monax/hoard/v8/version"
 	"io/ioutil"
 	"testing"
 
@@ -27,7 +28,7 @@ func TestOpenPGPGrant(t *testing.T) {
 	assert.NoError(t, err)
 
 	// Try to read reference from grant
-	ref, err := OpenPGPReferenceV2(grant, &testPGP)
+	ref, err := OpenPGPReference(grant, &testPGP, version.LatestGrantVersion)
 	assert.NoError(t, err)
 	assert.EqualValues(t, testRefs, ref)
 
@@ -36,7 +37,7 @@ func TestOpenPGPGrant(t *testing.T) {
 	assert.NoError(t, err)
 
 	// Try to read reference from grant
-	ref, err = OpenPGPReferenceV2(grant, &testPGP)
+	ref, err = OpenPGPReference(grant, &testPGP, version.LatestGrantVersion)
 	assert.NoError(t, err)
 	assert.EqualValues(t, testRefs, ref)
 
@@ -45,7 +46,7 @@ func TestOpenPGPGrant(t *testing.T) {
 	assert.NoError(t, err)
 
 	// Try to read reference from grant
-	ref, err = OpenPGPReferenceV2(grant, &testPGP)
+	ref, err = OpenPGPReference(grant, &testPGP, version.LatestGrantVersion)
 	assert.NoError(t, err)
 	assert.EqualValues(t, testRefs, ref)
 
